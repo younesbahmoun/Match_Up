@@ -14,7 +14,8 @@ class AuthService
 {
     public function __construct(
         protected AuthRepositoryInterface $authRepository
-    ) {}
+    ) {
+    }
 
     public function register(RegisterData $data): AuthResultData
     {
@@ -59,7 +60,7 @@ class AuthService
             'password' => $data->password,
         ]);
 
-        if (! $token) {
+        if (!$token) {
             throw new UnauthorizedHttpException('', 'Invalid credentials.');
         }
 
@@ -81,5 +82,19 @@ class AuthService
     public function logout(): void
     {
         auth('api')->logout();
+    }
+
+    public function refresh(): AuthResultData
+    {
+        $newToken = auth('api')->refresh();
+
+        $user = auth('api')->user()->load(['player', 'owner']);
+
+        return new AuthResultData(
+            accessToken: $newToken,
+            tokenType: 'bearer',
+            expiresIn: auth('api')->factory()->getTTL() * 60,
+            user: $user,
+        );
     }
 }
