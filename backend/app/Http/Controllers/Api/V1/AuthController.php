@@ -11,12 +11,18 @@ use App\Http\Resources\Auth\AuthResource;
 use App\Http\Resources\Auth\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Hash;
+
 
 class AuthController extends Controller
 {
     public function __construct(
         protected AuthService $authService
-    ) {}
+    ) {
+    }
 
     public function register(RegisterRequest $request): AuthResource
     {
@@ -46,4 +52,50 @@ class AuthController extends Controller
             'message' => 'Logged out successfully.',
         ]);
     }
-}
+
+    public function refresh(): AuthResource
+    {
+        return new AuthResource(
+            $this->authService->refresh()
+        );
+    }
+
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        Password::sendResetLink($request->only('email'));
+
+        return response()->json([
+            'message' => 'Reset link sent.'
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'token' => ['required'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            throw new \Exception('Reset failed');
+        }
+
+        return response()->json([
+            'message' => 'Password reset successful'
+        ]);
+    }
+}   
