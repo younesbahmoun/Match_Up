@@ -14,11 +14,11 @@ class TerrainPolicy
 
     public function update(User $user, Terrain $terrain): bool
     {
-        return $user->role === 'owner' && $terrain->user_id === $user->id;
+        return $user->role === 'owner' && $terrain->owner_id === $user->id;
     }
 
     public function delete(User $user, Terrain $terrain): bool
     {
-        return $user->role === 'owner' && $terrain->user_id === $user->id;
+        return $user->role === 'owner' && $terrain->owner_id === $user->id;
     }
 }
