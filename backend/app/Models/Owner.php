@@ -12,4 +12,9 @@ class Owner extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function terrains()
+    {
+        return $this->hasMany(Terrain::class);
+    }
 }
