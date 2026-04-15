@@ -22,4 +22,9 @@ class Availability extends Model
             // 'is_active' => 'boolean',
         ];
     }
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }
