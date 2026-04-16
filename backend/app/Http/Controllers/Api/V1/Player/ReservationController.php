@@ -21,18 +21,20 @@ class ReservationController extends Controller
     }
 
     public function index() {
+        $this->authorize('index', Reservation::class);
         $reservations = $this->reservationService->listReservations(auth('api')->user()->player);
         return ReservationResource::collection($reservations);
     }
 
     public function show(Reservation $reservation) {
+        $this->authorize('view', $reservation);
         return new ReservationResource($reservation->load('terrain.owner'));
     }
     
 
     public function store(StoreReservationRequest $request, Terrain $terrain)
     {
-        // $this->authorize('create', [Reservation::class, $terrain]);
+        $this->authorize('create', Reservation::class);
         // dd(auth('api')->user()->player->reservations->player_id);
         $data = CreateReservationData::fromArray($request->validated(), $terrain->id);
 
