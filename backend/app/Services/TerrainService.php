@@ -5,7 +5,6 @@ namespace App\Services;
 use App\DataTransferObjects\Terrain\CreateTerrainData;
 use App\DataTransferObjects\Terrain\UpdateTerrainData;
 use App\Models\Terrain;
-use App\Models\User;
 use App\Repositories\Contracts\TerrainRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -25,7 +24,7 @@ class TerrainService
         return $this->terrainRepository->getByOwnerId($owner);
     }
 
-    public function store(User $owner, CreateTerrainData $data): Terrain
+    public function store($owner, CreateTerrainData $data): Terrain
     {
         // dd($owner);
         $terrain = $this->terrainRepository->create([

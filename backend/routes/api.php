@@ -4,44 +4,67 @@ use App\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Owner\TerrainController;
 use App\Http\Controllers\Api\V1\Owner\AvailabilityController;
+use App\Http\Controllers\Api\V1\Player\ReservationController;
 
 Route::prefix('v1')->group(function () {
     // Auth Routes
     Route::prefix('auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
         Route::middleware('auth:api')->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
         });
-
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     });
 
-    // Public Terrain Routes
-    Route::get('/terrains', [TerrainController::class, 'publicIndex']);
-    Route::get('/terrains/{terrain}', [TerrainController::class, 'show']);
+    // Public Routes
+    Route::prefix('terrains')->group(function () {
+        Route::get('/', [TerrainController::class, 'publicIndex']);
+        Route::get('{terrain}', [TerrainController::class, 'show']);
+        Route::get('{terrain}/availabilities/{availability}', [AvailabilityController::class, 'show']);
+        Route::get('{terrain}/availabilities', [AvailabilityController::class, 'index']);
+    });
 
 
+    // Route::prefix('owner/terrains')->middleware(['auth:api', 'role:owner'])->group(function () {
+    //     // Terrain
+    //     // Route::apiResource('terrains', TerrainController::class)->except(['show', 'index']);
+    //     Route::get('/', [TerrainController::class, 'index']);
+    //     Route::get('/{terrain}', [TerrainController::class, 'show']);
+    //     Route::post('/', [TerrainController::class, 'store']);
+    //     // Route::put('/terrains/{terrain}', [TerrainController::class, 'update']);
+    //     Route::patch('/{terrain}', [TerrainController::class, 'update']);
+    //     Route::delete('/{terrain}', [TerrainController::class, 'destroy']);
+
+    //     // Availability
+    //     Route::prefix('{terrain}')->scopeBindings()->group(function () {
+    //         // Route::get('availabilities', [AvailabilityController::class, 'index']);
+    //         // Route::post('availabilities', [AvailabilityController::class, 'store']);
+    //         // Route::get('availabilities/{availability}', [AvailabilityController::class, 'show']);
+    //         // Route::patch('availabilities/{availability}', [AvailabilityController::class, 'update']);
+    //         // Route::delete('availabilities/{availability}', [AvailabilityController::class, 'destroy']);
+    //         Route::apiResource('availabilities', AvailabilityController::class);
+    //     });
+    // });
+
+    // Owner Routes
     Route::prefix('owner')->middleware(['auth:api', 'role:owner'])->group(function () {
-        // Terrain
-        // Route::apiResource('terrains', TerrainController::class)->except(['show', 'index']);
-        Route::get('/terrains', [TerrainController::class, 'index']);
-        Route::post('/terrains', [TerrainController::class, 'store']);
-        // Route::put('/terrains/{terrain}', [TerrainController::class, 'update']);
-        Route::patch('/terrains/{terrain}', [TerrainController::class, 'update']);
-        Route::delete('/terrains/{terrain}', [TerrainController::class, 'destroy']);
+        Route::apiResource('terrains', TerrainController::class);
 
-        // Availability
         Route::prefix('terrains/{terrain}')->scopeBindings()->group(function () {
-            Route::get('availabilities', [AvailabilityController::class, 'index']);
-            Route::post('availabilities', [AvailabilityController::class, 'store']);
-            Route::get('availabilities/{availability}', [AvailabilityController::class, 'show']);
-            Route::patch('availabilities/{availability}', [AvailabilityController::class, 'update']);
-            Route::delete('availabilities/{availability}', [AvailabilityController::class, 'destroy']);
+            Route::apiResource('availabilities', AvailabilityController::class);
         });
+    });
+
+    // Player Routes
+    Route::prefix('player')->middleware(['auth:api', 'role:player'])->group(function () {
+        Route::post('terrains/{terrain}/reservations', [ReservationController::class, 'store']);
+        Route::get('reservations', [ReservationController::class, 'index']);
+        Route::get('reservations/{reservation}', [ReservationController::class, 'show']);
+        // Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy']);
     });
 });
