@@ -24,4 +24,14 @@ class Reservation extends Model
             // 'status' => ReservationStatus::class,
         ];
     }
+
+    public function player()
+    {
+        return $this->belongsTo(User::class, 'player_id');
+    }
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class, 'terrain_id');
+    }
 }
