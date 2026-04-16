@@ -27,7 +27,7 @@ class Reservation extends Model
 
     public function player()
     {
-        return $this->belongsTo(User::class, 'player_id');
+        return $this->belongsTo(Player::class, 'player_id');
     }
 
     public function terrain()
