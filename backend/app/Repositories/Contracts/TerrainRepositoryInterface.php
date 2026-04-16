@@ -11,7 +11,7 @@ interface TerrainRepositoryInterface
 
     public function getAll(): Collection;
 
-    public function getByOwnerId($owner): Collection;
+    public function getByOwnerId(Owner $owner): Collection;
 
     public function update(Terrain $terrain, array $data): bool;
 

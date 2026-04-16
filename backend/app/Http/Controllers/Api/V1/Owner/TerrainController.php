@@ -51,7 +51,7 @@ class TerrainController extends Controller
     {
         $this->authorize('create', Terrain::class);
 
-        $owner = auth('api')->user();
+        $owner = auth('api')->user()->owner;
 
         // dd($request->validated());
         // $data = $request->validated();
