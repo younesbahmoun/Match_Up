@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Models\Owner;
 use App\Models\Terrain;
 use Illuminate\Database\Eloquent\Collection;
 

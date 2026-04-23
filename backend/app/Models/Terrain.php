@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Terrain extends Model
 {
@@ -18,9 +19,9 @@ class Terrain extends Model
         // 'image',
     ];
 
-    public function owner()
+    public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(Owner::class, 'owner_id');
     }
 
     public function availabilities()

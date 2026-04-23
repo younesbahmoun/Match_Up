@@ -20,18 +20,16 @@ class AvailabilityPolicy
 
     public function create(User $user, Terrain $terrain): bool
     {
-        return $terrain->owner->id === $user->id;
+        return $terrain->owner_id === $user->owner?->id;
     }
     
     public function update(User $user, Availability $availability): bool
     {
-        return $availability->terrain->owner->id === $user->id;
+        return $availability->terrain->owner_id === $user->owner?->id;
     }
 
     public function delete(User $user, Availability $availability): bool
     {
-        return $availability->terrain->owner->id === $user->id;
-        // return $availability->terrain->owner_id === $user->id; reload just terrain
-
+        return $availability->terrain->owner_id === $user->owner?->id;
     }
 }

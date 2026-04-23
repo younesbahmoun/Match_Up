@@ -38,7 +38,7 @@ class TerrainService
         ]);
 
         // return $terrain->load('owner');
-        return $terrain;
+        return $terrain->fresh(['owner.user']);
     }
 
     public function update(Terrain $terrain, UpdateTerrainData $data): Terrain
@@ -47,7 +47,7 @@ class TerrainService
         $this->terrainRepository->update($terrain, $data->toArray());
 
         // return $terrain->fresh(['owner']);
-        return $terrain;
+        return $terrain->fresh(['owner.user']);
     }
 
     public function delete(Terrain $terrain): void

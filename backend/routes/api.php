@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Owner\DashboardController;
 use App\Http\Controllers\Api\V1\Owner\TerrainController;
 use App\Http\Controllers\Api\V1\Owner\AvailabilityController;
+use App\Http\Controllers\Api\V1\Owner\ReservationController as OwnerReservationController;
 use App\Http\Controllers\Api\V1\Player\ReservationController;
 
 Route::prefix('v1')->group(function () {
@@ -24,9 +26,9 @@ Route::prefix('v1')->group(function () {
     // Public Routes
     Route::prefix('terrains')->group(function () {
         Route::get('/', [TerrainController::class, 'publicIndex']);
-        Route::get('{terrain}', [TerrainController::class, 'show']);
-        Route::get('{terrain}/availabilities/{availability}', [AvailabilityController::class, 'show']);
-        Route::get('{terrain}/availabilities', [AvailabilityController::class, 'index']);
+        Route::get('{terrain}', [TerrainController::class, 'publicShow']);
+        Route::get('{terrain}/availabilities/{availability}', [AvailabilityController::class, 'publicShow']);
+        Route::get('{terrain}/availabilities', [AvailabilityController::class, 'publicIndex']);
     });
 
 
@@ -53,7 +55,12 @@ Route::prefix('v1')->group(function () {
 
     // Owner Routes
     Route::prefix('owner')->middleware(['auth:api', 'role:owner'])->group(function () {
+        Route::get('dashboard', [DashboardController::class, 'show']);
+        Route::get('reservations/calendar', [OwnerReservationController::class, 'calendar']);
+        Route::get('reservations', [OwnerReservationController::class, 'index']);
+        Route::get('reservations/{reservation}', [OwnerReservationController::class, 'show']);
         Route::apiResource('terrains', TerrainController::class);
+        Route::get('terrains/{terrain}/reservations', [OwnerReservationController::class, 'terrainIndex']);
 
         Route::prefix('terrains/{terrain}')->scopeBindings()->group(function () {
             Route::apiResource('availabilities', AvailabilityController::class);

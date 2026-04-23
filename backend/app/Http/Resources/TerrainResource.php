@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\UserResource;
+
 class TerrainResource extends JsonResource
 {
     /**
@@ -24,7 +24,19 @@ class TerrainResource extends JsonResource
             'hour_price' => $this->hour_price,
             'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),
-            'owner' => new UserResource($this->whenLoaded('owner')),
+            'owner' => $this->whenLoaded('owner', function () {
+                $user = $this->owner?->user;
+
+                if (! $user) {
+                    return null;
+                }
+
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+            }),
         ];
     }
 }

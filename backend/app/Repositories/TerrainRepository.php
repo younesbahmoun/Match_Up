@@ -15,13 +15,12 @@ class TerrainRepository implements TerrainRepositoryInterface
 
     public function getAll(): Collection
     {
-        return Terrain::with('owner')->latest()->get();
+        return Terrain::with('owner.user')->latest()->get();
     }
 
     public function getByOwnerId($owner): Collection
     {
-        // return Terrain::with('owner')->where('user_id', $owner->id)->latest()->get();
-        return $owner->terrains()->latest()->get();
+        return $owner->terrains()->with('owner.user')->latest()->get();
     }
 
     public function update(Terrain $terrain, array $data): bool

@@ -2,13 +2,23 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Models\Owner;
 use App\Models\Reservation;
+use App\Models\Terrain;
+use Illuminate\Database\Eloquent\Collection;
 
 interface ReservationRepositoryInterface
 {
     public function create(array $data): Reservation;
-    // public function delete(Reservation $reservation): bool;
-    public function listReservations($player);
+
+    public function listReservations($player): Collection;
+
+    public function listOwnerReservations(Owner $owner, array $filters = []): Collection;
+
+    public function listTerrainReservations(Terrain $terrain, array $filters = []): Collection;
+
+    public function findOwnerReservation(Owner $owner, int $reservationId): ?Reservation;
+
     public function hasOverlap(
         int $terrainId,
         string $date,

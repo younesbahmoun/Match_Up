@@ -38,10 +38,19 @@ class TerrainController extends Controller
     }
 
     // Public: terrain details
+    public function publicShow(Terrain $terrain)
+    {
+        $terrain->load('owner.user');
+
+        return new TerrainResource($terrain);
+    }
+
+    // Owner: one of his terrains
     public function show(Terrain $terrain)
     {
-        // $terrain->loadMissing('owner');
-        $terrain->load('owner');
+        $this->authorize('update', $terrain);
+
+        $terrain->load('owner.user');
 
         return new TerrainResource($terrain);
     }
@@ -64,7 +73,9 @@ class TerrainController extends Controller
 
         $terrain = $this->terrainService->store($owner, $dto);
 
-        return new TerrainResource($terrain);
+        return new TerrainResource(
+            $terrain->load('owner.user')
+        );
 
     }
 
@@ -77,7 +88,9 @@ class TerrainController extends Controller
 
         $updatedTerrain = $this->terrainService->update($terrain, $dto);
 
-        return new TerrainResource($updatedTerrain);
+        return new TerrainResource(
+            $updatedTerrain->load('owner.user')
+        );
     }
 
     // Owner only
